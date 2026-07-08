@@ -10,47 +10,66 @@ const WIDGET_HEIGHT = 700;
 const MARGIN_RIGHT  = 40;
 const MARGIN_TOP    = 50;
 
-// Arquivo para salvar posição da janela
-const POS_FILE = path.join(app.getPath('userData'), 'window-position.json');
+const APP_WIDTH  = 1100;
+const APP_HEIGHT = 720;
+
+// Diretório de dados persistentes
+const DATA_DIR = app.getPath('userData');
+const POS_FILE  = path.join(DATA_DIR, 'window-position.json');
+const DATA_FILE = path.join(DATA_DIR, 'disciplines.json');
+
+// ============================================================
+//  PERSISTÊNCIA (JSON File)
+//  Phase 5: será substituído por SQLite
 // ============================================================
 
-function loadPosition() {
+function loadJSON(filepath, fallback) {
   try {
-    if (fs.existsSync(POS_FILE)) {
-      return JSON.parse(fs.readFileSync(POS_FILE, 'utf8'));
+    if (fs.existsSync(filepath)) {
+      return JSON.parse(fs.readFileSync(filepath, 'utf8'));
     }
   } catch { /* ignore */ }
-  return null;
+  return fallback;
 }
 
-function savePosition(x, y) {
+function saveJSON(filepath, data) {
   try {
-    fs.writeFileSync(POS_FILE, JSON.stringify({ x, y }));
+    fs.writeFileSync(filepath, JSON.stringify(data, null, 2));
   } catch { /* ignore */ }
 }
 
-function createWindow() {
+// Migração: se existiam dados no localStorage (via Electron's partition),
+// não conseguimos acessar aqui, então o renderer faz a migração na primeira vez
+// via IPC "save-disciplines".
+
+// ============================================================
+//  JANELAS
+// ============================================================
+
+let widgetWin = null;
+let appWin = null;
+
+function createWidgetWindow() {
   const primaryDisplay = screen.getPrimaryDisplay();
   const { width: screenW } = primaryDisplay.workAreaSize;
 
-  // Posição salva ou padrão (canto superior direito)
-  const saved = loadPosition();
+  const saved = loadJSON(POS_FILE, null);
   const x = saved ? saved.x : screenW - WIDGET_WIDTH - MARGIN_RIGHT;
   const y = saved ? saved.y : MARGIN_TOP;
 
-  const win = new BrowserWindow({
+  widgetWin = new BrowserWindow({
     width: WIDGET_WIDTH,
     height: WIDGET_HEIGHT,
     x,
     y,
-    title: 'DisciplineCounter',
+    title: 'StudyOS Widget',
+    icon: path.join(__dirname, 'icon.png'),
     frame: false,
     transparent: true,
     skipTaskbar: true,
     resizable: false,
     hasShadow: false,
     alwaysOnTop: false,
-
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -58,40 +77,127 @@ function createWindow() {
     },
   });
 
-  win.loadFile(path.join(__dirname, 'index.html'));
+  widgetWin.loadFile(path.join(__dirname, 'widget', 'widget.html'));
 
-  // Salva posição ao mover (arrastar)
-  win.on('moved', () => {
-    const [nx, ny] = win.getPosition();
-    savePosition(nx, ny);
+  // Salva posição ao arrastar
+  widgetWin.on('moved', () => {
+    const [nx, ny] = widgetWin.getPosition();
+    saveJSON(POS_FILE, { x: nx, y: ny });
   });
 
-  // --- Controle de foco via IPC para o modal de edição ---
-  let modalOpen = false;
-
-  ipcMain.on('modal-opened', () => {
-    modalOpen = true;
-    win.setAlwaysOnTop(true);
-    win.focus();
-  });
-
-  ipcMain.on('modal-closed', () => {
-    modalOpen = false;
-    win.setAlwaysOnTop(false);
-    win.blur();
+  widgetWin.on('closed', () => {
+    widgetWin = null;
   });
 }
 
-// Impede múltiplas instâncias
+function createAppWindow() {
+  if (appWin) {
+    appWin.focus();
+    return;
+  }
+
+  const primaryDisplay = screen.getPrimaryDisplay();
+  const { width: screenW, height: screenH } = primaryDisplay.workAreaSize;
+
+  appWin = new BrowserWindow({
+    width: APP_WIDTH,
+    height: APP_HEIGHT,
+    x: Math.round((screenW - APP_WIDTH) / 2),
+    y: Math.round((screenH - APP_HEIGHT) / 2),
+    title: 'StudyOS',
+    icon: path.join(__dirname, 'icon.png'),
+    frame: true,
+    transparent: false,
+    resizable: true,
+    minWidth: 800,
+    minHeight: 500,
+    backgroundColor: '#0a0a10',
+    autoHideMenuBar: true,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js'),
+    },
+  });
+
+  appWin.loadFile(path.join(__dirname, 'app', 'app.html'));
+
+  appWin.on('closed', () => {
+    appWin = null;
+  });
+}
+
+// ============================================================
+//  IPC HANDLERS
+// ============================================================
+
+// --- Navegação entre janelas ---
+ipcMain.on('open-app', () => createAppWindow());
+
+ipcMain.on('close-app', () => {
+  if (appWin) appWin.close();
+});
+
+// --- Modal focus (widget) ---
+ipcMain.on('modal-opened', () => {
+  if (widgetWin) {
+    widgetWin.setAlwaysOnTop(true);
+    widgetWin.focus();
+  }
+});
+
+ipcMain.on('modal-closed', () => {
+  if (widgetWin) {
+    widgetWin.setAlwaysOnTop(false);
+    widgetWin.blur();
+  }
+});
+
+// --- Data: Disciplines ---
+ipcMain.handle('get-disciplines', () => {
+  return loadJSON(DATA_FILE, []);
+});
+
+ipcMain.handle('save-disciplines', (_event, data) => {
+  saveJSON(DATA_FILE, data);
+  // Notifica a outra janela para atualizar (se existir)
+  if (widgetWin && !widgetWin.isDestroyed()) {
+    widgetWin.webContents.send('data-changed');
+  }
+  if (appWin && !appWin.isDestroyed()) {
+    appWin.webContents.send('data-changed');
+  }
+  return true;
+});
+
+// --- Data: Events (placeholder para Phase 2+) ---
+ipcMain.handle('get-events', () => {
+  const eventsFile = path.join(DATA_DIR, 'events.json');
+  return loadJSON(eventsFile, []);
+});
+
+ipcMain.handle('save-events', (_event, data) => {
+  const eventsFile = path.join(DATA_DIR, 'events.json');
+  saveJSON(eventsFile, data);
+  return true;
+});
+
+// ============================================================
+//  APP LIFECYCLE
+// ============================================================
+
 const gotTheLock = app.requestSingleInstanceLock();
 if (!gotTheLock) {
   app.quit();
 } else {
   app.on('second-instance', () => {
-    // Se tentarem abrir outra instância, ignora
+    if (widgetWin) {
+      widgetWin.show();
+      widgetWin.focus();
+    }
   });
 
-  app.whenReady().then(createWindow);
+  app.whenReady().then(createWidgetWindow);
 }
 
 app.on('window-all-closed', () => {
