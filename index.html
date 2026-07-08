@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contador de Disciplina</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app" id="app">
+    <!-- Cards são renderizados dinamicamente pelo JS -->
+  </div>
+
+  <!-- Modal de edição -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <h2 class="modal__title" id="modalTitle">Editar Disciplina</h2>
+
+      <label class="modal__label">
+        Nome da disciplina
+        <input type="text" class="modal__input" id="inputName" placeholder="Ex: Cálculo II" />
+      </label>
+
+      <label class="modal__label">
+        Rótulo do semestre
+        <input type="text" class="modal__input" id="inputSemester" placeholder="Ex: Semestre 2026.1" />
+      </label>
+
+      <div class="modal__row">
+        <label class="modal__label">
+          Data de início
+          <input type="date" class="modal__input" id="inputStart" />
+        </label>
+        <label class="modal__label">
+          Data de fim
+          <input type="date" class="modal__input" id="inputEnd" />
+        </label>
+      </div>
+
+      <div class="modal__actions">
+        <button class="btn btn--ghost" id="btnCancel">Cancelar</button>
+        <button class="btn btn--danger" id="btnDelete">Excluir</button>
+        <button class="btn btn--primary" id="btnSave">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
