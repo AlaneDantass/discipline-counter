@@ -199,6 +199,24 @@ ipcMain.handle('save-events', (_event, data) => {
   return true;
 });
 
+// --- Data: Schedules (Phase 3) ---
+ipcMain.handle('get-schedules', () => {
+  const schedulesFile = path.join(DATA_DIR, 'schedules.json');
+  return loadJSON(schedulesFile, []);
+});
+
+ipcMain.handle('save-schedules', (_event, data) => {
+  const schedulesFile = path.join(DATA_DIR, 'schedules.json');
+  saveJSON(schedulesFile, data);
+  if (widgetWin && !widgetWin.isDestroyed()) {
+    widgetWin.webContents.send('data-changed');
+  }
+  if (appWin && !appWin.isDestroyed()) {
+    appWin.webContents.send('data-changed');
+  }
+  return true;
+});
+
 // ============================================================
 //  APP LIFECYCLE
 // ============================================================

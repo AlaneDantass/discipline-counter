@@ -48,26 +48,84 @@
       <!-- Tab: Calendário -->
       <section class="tab-panel active" id="tab-calendario">
         <div class="panel-header">
-          <h2 class="panel-header__title">Calendário</h2>
-          <p class="panel-header__subtitle">Sua semana em um olhar</p>
+          <div class="calendar-header-row">
+            <div>
+              <h2 class="panel-header__title">Calendário</h2>
+              <p class="panel-header__subtitle">Organize suas provas, tarefas e estudos</p>
+            </div>
+            <div class="calendar-controls">
+              <div class="calendar-nav">
+                <button class="btn-nav" id="calendarPrevBtn" title="Anterior">◄</button>
+                <span class="calendar-title" id="calendarTitle">Julho 2026</span>
+                <button class="btn-nav" id="calendarNextBtn" title="Próximo">►</button>
+              </div>
+              <div class="view-toggle">
+                <button class="toggle-btn active" id="viewMonthBtn">Mês</button>
+                <button class="toggle-btn" id="viewWeekBtn">Semana</button>
+              </div>
+              <button class="btn btn--primary btn-new-event" id="addEventBtn">+ Novo Evento</button>
+            </div>
+          </div>
         </div>
-        <div class="panel-body placeholder-panel">
-          <div class="placeholder-icon">📅</div>
-          <h3 class="placeholder-title">Em breve</h3>
-          <p class="placeholder-text">O calendário visual com grade semanal/mensal será implementado na Phase 2.</p>
+        <div class="panel-body calendar-layout">
+          <div class="calendar-main">
+            <!-- Grid Mensal -->
+            <div class="month-grid" id="monthGrid">
+              <div class="grid-header">Dom</div>
+              <div class="grid-header">Seg</div>
+              <div class="grid-header">Ter</div>
+              <div class="grid-header">Qua</div>
+              <div class="grid-header">Qui</div>
+              <div class="grid-header">Sex</div>
+              <div class="grid-header">Sáb</div>
+              <!-- Células do mês geradas por JS -->
+            </div>
+
+            <!-- Grid Semanal -->
+            <div class="week-grid hidden" id="weekGrid">
+              <!-- Colunas semanais geradas por JS -->
+            </div>
+          </div>
+
+          <div class="calendar-sidebar">
+            <div class="sidebar-header">
+              <h3 class="sidebar-date" id="selectedDateLabel">Selecione um dia</h3>
+              <p class="sidebar-subtitle">Eventos deste dia</p>
+            </div>
+            <div class="events-list" id="dayEventsList">
+              <!-- Eventos listados via JS -->
+            </div>
+          </div>
         </div>
       </section>
 
       <!-- Tab: Horários -->
       <section class="tab-panel" id="tab-horarios">
         <div class="panel-header">
-          <h2 class="panel-header__title">Horários Fixos</h2>
-          <p class="panel-header__subtitle">Aulas, sono, transporte e outros compromissos fixos</p>
+          <div class="schedule-header-row">
+            <div>
+              <h2 class="panel-header__title">Horários Fixos</h2>
+              <p class="panel-header__subtitle">Aulas, sono, transporte e outros compromissos fixos semanais</p>
+            </div>
+            <button class="btn btn--primary" id="addScheduleBtn">+ Novo Horário</button>
+          </div>
         </div>
-        <div class="panel-body placeholder-panel">
-          <div class="placeholder-icon">🕐</div>
-          <h3 class="placeholder-title">Em breve</h3>
-          <p class="placeholder-text">O gerenciador de horários fixos será implementado na Phase 3.</p>
+        <div class="panel-body schedule-layout">
+          <div class="schedule-grid-container">
+            <div class="schedule-grid" id="scheduleGrid">
+              <!-- Headers -->
+              <div class="sched-header sched-header--spacer">Hora</div>
+              <div class="sched-header">Seg</div>
+              <div class="sched-header">Ter</div>
+              <div class="sched-header">Qua</div>
+              <div class="sched-header">Qui</div>
+              <div class="sched-header">Sex</div>
+              <div class="sched-header">Sáb</div>
+              <div class="sched-header">Dom</div>
+
+              <!-- As linhas de horas (07:00 a 22:00) e os blocos de compromisso serão gerados via JavaScript -->
+            </div>
+          </div>
         </div>
       </section>
 
@@ -97,6 +155,127 @@
         </div>
       </section>
     </main>
+  </div>
+
+  <!-- Modal de Evento -->
+  <div class="modal-overlay" id="eventModalOverlay">
+    <div class="modal">
+      <h2 class="modal__title" id="eventModalTitle">Novo Evento</h2>
+
+      <label class="modal__label">
+        Título do Evento
+        <input type="text" class="modal__input" id="eventInputTitle" placeholder="Ex: Prova de Cálculo II" required />
+      </label>
+
+      <div class="modal__row">
+        <label class="modal__label">
+          Data
+          <input type="date" class="modal__input" id="eventInputDate" required />
+        </label>
+        <label class="modal__label">
+          Hora (opcional)
+          <input type="time" class="modal__input" id="eventInputTime" />
+        </label>
+      </div>
+
+      <div class="modal__row">
+        <label class="modal__label">
+          Disciplina
+          <select class="modal__input" id="eventInputDiscipline">
+            <option value="">Nenhuma / Geral</option>
+          </select>
+        </label>
+        <label class="modal__label">
+          Categoria
+          <select class="modal__input" id="eventInputCategory">
+            <option value="prova">Prova (Vermelho)</option>
+            <option value="trabalho">Trabalho (Amarelo)</option>
+            <option value="estudo">Estudo (Azul)</option>
+            <option value="outro">Outro (Roxo)</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="modal__label">
+        Descrição
+        <textarea class="modal__input" id="eventInputDesc" rows="3" placeholder="Detalhes adicionais..."></textarea>
+      </label>
+
+      <div class="modal__actions">
+        <button class="btn btn--ghost" id="eventBtnCancel">Cancelar</button>
+        <button class="btn btn--danger hidden" id="eventBtnDelete">Excluir</button>
+        <button class="btn btn--primary" id="eventBtnSave">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de Horário Fixo -->
+  <div class="modal-overlay" id="schedModalOverlay">
+    <div class="modal">
+      <h2 class="modal__title" id="schedModalTitle">Novo Horário Fixo</h2>
+
+      <label class="modal__label">
+        Título do Compromisso
+        <input type="text" class="modal__input" id="schedInputTitle" placeholder="Ex: Aula de Cálculo II" required />
+      </label>
+
+      <label class="modal__label">
+        Dia da Semana
+        <select class="modal__input" id="schedInputDay" required>
+          <option value="1">Segunda-feira</option>
+          <option value="2">Terça-feira</option>
+          <option value="3">Quarta-feira</option>
+          <option value="4">Quinta-feira</option>
+          <option value="5">Sexta-feira</option>
+          <option value="6">Sábado</option>
+          <option value="7">Domingo</option>
+        </select>
+      </label>
+
+      <div class="modal__row">
+        <label class="modal__label">
+          Início
+          <select class="modal__input" id="schedInputStart" required>
+            <!-- Preenchido via JS (07:00 a 22:30) -->
+          </select>
+        </label>
+        <label class="modal__label">
+          Fim
+          <select class="modal__input" id="schedInputEnd" required>
+            <!-- Preenchido via JS (07:30 a 23:00) -->
+          </select>
+        </label>
+      </div>
+
+      <div class="modal__row">
+        <label class="modal__label">
+          Disciplina (opcional)
+          <select class="modal__input" id="schedInputDiscipline">
+            <option value="">Nenhuma / Geral</option>
+          </select>
+        </label>
+        <label class="modal__label">
+          Categoria
+          <select class="modal__input" id="schedInputCategory">
+            <option value="aula">Aula (Dourado)</option>
+            <option value="estudo">Estudo (Cyan)</option>
+            <option value="pessoal">Pessoal (Roxo)</option>
+            <option value="outro">Outro (Rosa)</option>
+          </select>
+        </label>
+      </div>
+
+      <label class="modal__label">
+        Observações
+        <textarea class="modal__input" id="schedInputDesc" rows="3" placeholder="Ex: Sala 102, Bloco A"></textarea>
+      </label>
+
+      <div class="modal__actions">
+        <button class="btn btn--ghost" id="schedBtnCancel">Cancelar</button>
+        <button class="btn btn--danger hidden" id="schedBtnDelete">Excluir</button>
+        <button class="btn btn--primary" id="schedBtnSave">Salvar</button>
+      </div>
+    </div>
   </div>
 
   <script src="../shared/utils.js"></script>

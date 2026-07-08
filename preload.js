@@ -14,7 +14,7 @@ contextBridge.exposeInMainWorld('studyBridge', {
 
   // Request-response (async)
   invoke: (channel, ...args) => {
-    const validChannels = ['get-disciplines', 'save-disciplines', 'get-events', 'save-events'];
+    const validChannels = ['get-disciplines', 'save-disciplines', 'get-events', 'save-events', 'get-schedules', 'save-schedules'];
     if (validChannels.includes(channel)) {
       return ipcRenderer.invoke(channel, ...args);
     }

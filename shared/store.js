@@ -34,4 +34,19 @@ const Store = {
       await window.studyBridge.invoke('save-events', list);
     }
   },
+
+  // Carrega horários fixos
+  async loadSchedules() {
+    if (window.studyBridge) {
+      return await window.studyBridge.invoke('get-schedules');
+    }
+    return [];
+  },
+
+  // Salva horários fixos
+  async saveSchedules(list) {
+    if (window.studyBridge) {
+      await window.studyBridge.invoke('save-schedules', list);
+    }
+  },
 };
