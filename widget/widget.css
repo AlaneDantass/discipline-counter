@@ -1,29 +1,17 @@
 /* ============================================================
-   RESET & GLOBAL
+   widget/widget.css — Estilos específicos do widget desktop
+   (Herda tokens de ../shared/theme.css)
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
-*, *::before, *::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
 
 body {
   background-color: transparent;
   overflow: hidden;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #e4e4e7;
-  -webkit-font-smoothing: antialiased;
-  user-select: none;
 }
 
-/* ============================================================
-   APP CONTAINER
-   ============================================================ */
+/* ---- Container ---- */
 .app {
   width: 100%;
-  height: 100vh;
+  height: calc(100vh - 52px); /* espaço para o botão expandir */
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -31,41 +19,32 @@ body {
   overflow-y: auto;
 }
 
-.app::-webkit-scrollbar { width: 3px; }
-.app::-webkit-scrollbar-track { background: transparent; }
-.app::-webkit-scrollbar-thumb { background: rgba(0, 240, 255, 0.2); border-radius: 99px; }
-
-/* ============================================================
-   CARD — Glassmorphism (alto contraste)
-   ============================================================ */
+/* ---- Card ---- */
 .card {
   flex-shrink: 0;
   padding: 20px 18px 14px;
   display: flex;
   flex-direction: column;
   gap: 12px;
-
-  background: rgba(8, 8, 14, 0.82);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(0, 240, 255, 0.15);
-  border-radius: 18px;
+  background: var(--color-bg);
+  backdrop-filter: blur(var(--blur));
+  -webkit-backdrop-filter: blur(var(--blur));
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   box-shadow: none;
   transition: border-color 0.3s ease;
 }
 
 .card:hover {
-  border-color: rgba(0, 240, 255, 0.28);
+  border-color: var(--color-border-hover);
 }
 
-/* ============================================================
-   HEADER
-   ============================================================ */
+/* ---- Header (drag handle) ---- */
 .card__header {
   display: flex;
   align-items: center;
   gap: 10px;
-  -webkit-app-region: drag;  /* ← arrasta a janela pelo header */
+  -webkit-app-region: drag;
   cursor: grab;
 }
 
@@ -84,7 +63,7 @@ body {
   font-size: 14px;
   font-weight: 700;
   letter-spacing: -0.02em;
-  color: #f0f0f3;
+  color: var(--color-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -97,15 +76,14 @@ body {
   margin-top: 1px;
 }
 
-/* edit button */
 .card__edit-btn {
-  -webkit-app-region: no-drag;  /* ← botão clicável, não arrasta */
+  -webkit-app-region: no-drag;
   width: 28px;
   height: 28px;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.4);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
   font-size: 13px;
   cursor: pointer;
   display: flex;
@@ -118,12 +96,10 @@ body {
 .card__edit-btn:hover {
   background: rgba(0, 220, 255, 0.12);
   border-color: rgba(0, 220, 255, 0.3);
-  color: #00e0ff;
+  color: var(--color-accent);
 }
 
-/* ============================================================
-   COUNTDOWN
-   ============================================================ */
+/* ---- Countdown ---- */
 .countdown {
   text-align: center;
   padding: 4px 0 2px;
@@ -134,7 +110,7 @@ body {
   font-weight: 900;
   letter-spacing: -0.04em;
   line-height: 1;
-  background: linear-gradient(135deg, #00f0ff 0%, #00c8ff 35%, #7b61ff 70%, #c084fc 100%);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-mid) 35%, var(--color-accent-deep) 70%, var(--color-accent-soft) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -156,7 +132,6 @@ body {
   margin-top: 3px;
 }
 
-/* progress bar */
 .countdown__bar-track {
   margin-top: 10px;
   height: 4px;
@@ -169,7 +144,7 @@ body {
   height: 100%;
   width: 0%;
   border-radius: 99px;
-  background: linear-gradient(90deg, #00f0ff, #00a8ff, #7b61ff, #c084fc);
+  background: linear-gradient(90deg, var(--color-accent), var(--color-accent-mid), var(--color-accent-deep), var(--color-accent-soft));
   transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
   box-shadow: 0 0 14px rgba(0, 220, 255, 0.5);
 }
@@ -179,13 +154,11 @@ body {
   justify-content: space-between;
   font-size: 9px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.25);
+  color: var(--color-text-faint);
   margin-top: 5px;
 }
 
-/* ============================================================
-   DAY GRID
-   ============================================================ */
+/* ---- Day Grid ---- */
 .grid-section {
   display: flex;
   flex-direction: column;
@@ -210,11 +183,9 @@ body {
   display: inline-block;
   margin-left: 5px;
 }
-
 .legend-dot:first-child { margin-left: 0; }
-
 .legend-dot--past    { background: rgba(0, 200, 255, 0.5); }
-.legend-dot--today   { background: #00f0ff; box-shadow: 0 0 8px rgba(0, 240, 255, 0.7); }
+.legend-dot--today   { background: var(--color-accent); box-shadow: 0 0 8px rgba(0, 240, 255, 0.7); }
 .legend-dot--future  { background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.1); }
 .legend-dot--manual  { background: rgba(0, 255, 136, 0.55); }
 
@@ -228,11 +199,6 @@ body {
   padding: 2px;
 }
 
-.grid::-webkit-scrollbar { width: 2px; }
-.grid::-webkit-scrollbar-track { background: transparent; }
-.grid::-webkit-scrollbar-thumb { background: rgba(0, 220, 255, 0.15); border-radius: 99px; }
-
-/* day cell */
 .day {
   width: 16px;
   height: 16px;
@@ -242,52 +208,24 @@ body {
   transition: all 0.2s ease;
   border: 1px solid transparent;
 }
+.day:hover { transform: scale(1.4); z-index: 10; }
 
-.day:hover {
-  transform: scale(1.4);
-  z-index: 10;
-}
-
-.day--future {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.07);
-}
-
-.day--future:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.2);
-}
-
-.day--past {
-  background: rgba(0, 200, 255, 0.3);
-  border-color: rgba(0, 200, 255, 0.15);
-}
-
-.day--past:hover {
-  background: rgba(0, 200, 255, 0.5);
-}
-
+.day--future { background: rgba(255, 255, 255, 0.05); border-color: rgba(255, 255, 255, 0.07); }
+.day--future:hover { background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.2); }
+.day--past { background: rgba(0, 200, 255, 0.3); border-color: rgba(0, 200, 255, 0.15); }
+.day--past:hover { background: rgba(0, 200, 255, 0.5); }
 .day--today {
   background: rgba(0, 240, 255, 0.65);
   border-color: rgba(0, 240, 255, 0.4);
   box-shadow: 0 0 10px rgba(0, 240, 255, 0.45);
   animation: today-pulse 2.5s ease-in-out infinite;
 }
-
 @keyframes today-pulse {
   0%, 100% { box-shadow: 0 0 8px rgba(0, 240, 255, 0.35); }
   50%      { box-shadow: 0 0 18px rgba(0, 240, 255, 0.65); }
 }
-
-.day--manual {
-  background: rgba(0, 255, 136, 0.45) !important;
-  border-color: rgba(0, 255, 136, 0.2) !important;
-}
-
-.day--manual:hover {
-  background: rgba(0, 255, 136, 0.65) !important;
-}
-
+.day--manual { background: rgba(0, 255, 136, 0.45) !important; border-color: rgba(0, 255, 136, 0.2) !important; }
+.day--manual:hover { background: rgba(0, 255, 136, 0.65) !important; }
 .day--manual::after {
   content: '✓';
   position: absolute;
@@ -301,29 +239,23 @@ body {
   line-height: 1;
 }
 
-/* finished state */
 .card--done .countdown__number {
-  background: linear-gradient(135deg, #00ff88, #00e0ff);
+  background: linear-gradient(135deg, var(--color-success), var(--color-accent));
   -webkit-background-clip: text;
   background-clip: text;
 }
+.card--done .countdown__label { color: rgba(0, 255, 136, 0.6); }
 
-.card--done .countdown__label {
-  color: rgba(0, 255, 136, 0.6);
-}
-
-/* ============================================================
-   ADD BUTTON
-   ============================================================ */
+/* ---- Add button ---- */
 .add-btn {
   flex-shrink: 0;
-  height: 48px;
-  border-radius: 14px;
+  height: 42px;
+  border-radius: var(--radius-md);
   border: 2px dashed rgba(0, 220, 255, 0.2);
   background: rgba(8, 8, 14, 0.5);
   color: rgba(0, 220, 255, 0.4);
-  font-family: inherit;
-  font-size: 13px;
+  font-family: var(--font-family);
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -334,22 +266,47 @@ body {
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
-
 .add-btn:hover {
   border-color: rgba(0, 220, 255, 0.45);
   background: rgba(0, 220, 255, 0.08);
-  color: #00e0ff;
+  color: var(--color-accent);
 }
+.add-btn__icon { font-size: 18px; font-weight: 300; line-height: 1; }
 
-.add-btn__icon {
-  font-size: 20px;
-  font-weight: 300;
-  line-height: 1;
+/* ---- Expand Button (Abrir StudyOS) ---- */
+.expand-btn {
+  position: fixed;
+  bottom: 6px;
+  left: 6px;
+  right: 6px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(0, 220, 255, 0.2);
+  background: linear-gradient(135deg, rgba(0, 200, 255, 0.12), rgba(123, 97, 255, 0.12));
+  color: var(--color-accent);
+  font-family: var(--font-family);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  -webkit-app-region: no-drag;
 }
+.expand-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 200, 255, 0.2), rgba(123, 97, 255, 0.2));
+  border-color: rgba(0, 220, 255, 0.4);
+  box-shadow: 0 0 20px rgba(0, 220, 255, 0.15);
+  transform: translateY(-1px);
+}
+.expand-btn__icon { font-size: 16px; }
 
-/* ============================================================
-   MODAL
-   ============================================================ */
+/* ---- Modal ---- */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -364,33 +321,24 @@ body {
   pointer-events: none;
   transition: opacity 0.25s ease;
 }
-
-.modal-overlay.active {
-  opacity: 1;
-  pointer-events: all;
-}
+.modal-overlay.active { opacity: 1; pointer-events: all; }
 
 .modal {
   width: 340px;
   background: rgba(14, 14, 22, 0.95);
   border: 1px solid rgba(0, 220, 255, 0.18);
-  border-radius: 18px;
+  border-radius: var(--radius-lg);
   padding: 24px 22px;
-  box-shadow:
-    0 12px 48px rgba(0, 0, 0, 0.6),
-    0 0 40px rgba(0, 200, 255, 0.08);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
   transform: scale(0.92) translateY(10px);
   transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
-
-.modal-overlay.active .modal {
-  transform: scale(1) translateY(0);
-}
+.modal-overlay.active .modal { transform: scale(1) translateY(0); }
 
 .modal__title {
   font-size: 16px;
   font-weight: 700;
-  color: #f0f0f3;
+  color: var(--color-text);
   margin-bottom: 18px;
   letter-spacing: -0.02em;
 }
@@ -401,94 +349,29 @@ body {
   gap: 5px;
   font-size: 11px;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--color-text-muted);
   margin-bottom: 14px;
 }
 
 .modal__input {
   width: 100%;
   padding: 10px 12px;
-  font-family: inherit;
+  font-family: var(--font-family);
   font-size: 13px;
   font-weight: 500;
-  color: #f0f0f3;
-  background: rgba(255, 255, 255, 0.05);
+  color: var(--color-text);
+  background: var(--color-surface);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
+  border-radius: var(--radius-sm);
   outline: none;
   transition: border-color 0.2s ease;
 }
-
 .modal__input:focus {
   border-color: rgba(0, 220, 255, 0.4);
   box-shadow: 0 0 0 3px rgba(0, 220, 255, 0.08);
 }
-
-/* date input color-scheme */
-.modal__input[type="date"] {
-  color-scheme: dark;
-}
-
-.modal__row {
-  display: flex;
-  gap: 12px;
-}
-
-.modal__row .modal__label {
-  flex: 1;
-}
-
-.modal__actions {
-  display: flex;
-  gap: 8px;
-  margin-top: 6px;
-}
-
-/* buttons */
-.btn {
-  flex: 1;
-  padding: 10px 0;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 10px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn--primary {
-  background: linear-gradient(135deg, #00c8ff, #7b61ff);
-  color: #fff;
-}
-
-.btn--primary:hover {
-  box-shadow: 0 4px 20px rgba(0, 200, 255, 0.3);
-  transform: translateY(-1px);
-}
-
-.btn--ghost {
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.5);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.btn--ghost:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.btn--danger {
-  background: rgba(255, 60, 80, 0.12);
-  color: rgba(255, 100, 110, 0.8);
-  border: 1px solid rgba(255, 60, 80, 0.15);
-}
-
-.btn--danger:hover {
-  background: rgba(255, 60, 80, 0.25);
-  color: #ff6a6a;
-}
-
-.btn--danger.hidden {
-  display: none;
-}
+.modal__input[type="date"] { color-scheme: dark; }
+.modal__row { display: flex; gap: 12px; }
+.modal__row .modal__label { flex: 1; }
+.modal__actions { display: flex; gap: 8px; margin-top: 6px; }
+.modal__actions .btn { flex: 1; }

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyOS</title>
+  <link rel="stylesheet" href="../shared/theme.css" />
+  <link rel="stylesheet" href="app.css" />
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <span class="sidebar__logo">⚡</span>
+        <h1 class="sidebar__title">StudyOS</h1>
+      </div>
+
+      <nav class="sidebar__nav">
+        <button class="nav-item active" data-tab="calendario">
+          <span class="nav-item__icon">📅</span>
+          <span class="nav-item__label">Calendário</span>
+        </button>
+        <button class="nav-item" data-tab="horarios">
+          <span class="nav-item__icon">🕐</span>
+          <span class="nav-item__label">Horários</span>
+        </button>
+        <button class="nav-item" data-tab="disciplinas">
+          <span class="nav-item__icon">📚</span>
+          <span class="nav-item__label">Disciplinas</span>
+        </button>
+        <button class="nav-item" data-tab="estatisticas">
+          <span class="nav-item__icon">📊</span>
+          <span class="nav-item__label">Estatísticas</span>
+        </button>
+      </nav>
+
+      <div class="sidebar__footer">
+        <button class="nav-item nav-item--minimize" id="minimizeBtn">
+          <span class="nav-item__icon">🔽</span>
+          <span class="nav-item__label">Minimizar</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main content area -->
+    <main class="main-content">
+      <!-- Tab: Calendário -->
+      <section class="tab-panel active" id="tab-calendario">
+        <div class="panel-header">
+          <h2 class="panel-header__title">Calendário</h2>
+          <p class="panel-header__subtitle">Sua semana em um olhar</p>
+        </div>
+        <div class="panel-body placeholder-panel">
+          <div class="placeholder-icon">📅</div>
+          <h3 class="placeholder-title">Em breve</h3>
+          <p class="placeholder-text">O calendário visual com grade semanal/mensal será implementado na Phase 2.</p>
+        </div>
+      </section>
+
+      <!-- Tab: Horários -->
+      <section class="tab-panel" id="tab-horarios">
+        <div class="panel-header">
+          <h2 class="panel-header__title">Horários Fixos</h2>
+          <p class="panel-header__subtitle">Aulas, sono, transporte e outros compromissos fixos</p>
+        </div>
+        <div class="panel-body placeholder-panel">
+          <div class="placeholder-icon">🕐</div>
+          <h3 class="placeholder-title">Em breve</h3>
+          <p class="placeholder-text">O gerenciador de horários fixos será implementado na Phase 3.</p>
+        </div>
+      </section>
+
+      <!-- Tab: Disciplinas -->
+      <section class="tab-panel" id="tab-disciplinas">
+        <div class="panel-header">
+          <h2 class="panel-header__title">Disciplinas</h2>
+          <p class="panel-header__subtitle">Suas matérias e contagem regressiva</p>
+        </div>
+        <div class="panel-body">
+          <div class="disc-list" id="discList">
+            <!-- Disciplinas renderizadas via JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Tab: Estatísticas -->
+      <section class="tab-panel" id="tab-estatisticas">
+        <div class="panel-header">
+          <h2 class="panel-header__title">Estatísticas</h2>
+          <p class="panel-header__subtitle">Acompanhe seu progresso de estudo</p>
+        </div>
+        <div class="panel-body placeholder-panel">
+          <div class="placeholder-icon">📊</div>
+          <h3 class="placeholder-title">Em breve</h3>
+          <p class="placeholder-text">O dashboard de estatísticas será implementado na Phase 5.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../shared/utils.js"></script>
+  <script src="../shared/store.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

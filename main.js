@@ -6,6 +6,9 @@ const fs = require('fs');
 app.name = 'studyos';
 app.setName('studyos');
 
+// Importa o DatabaseHelper (SQLite)
+const dbHelper = require('./db');
+
 // ============================================================
 //  CONFIGURAÇÃO
 // ============================================================
@@ -158,20 +161,30 @@ ipcMain.on('modal-closed', () => {
 });
 
 // --- Data: Disciplines ---
-ipcMain.handle('get-disciplines', () => {
-  return loadJSON(DATA_FILE, []);
+ipcMain.handle('get-disciplines', async () => {
+  try {
+    return await dbHelper.getDisciplines();
+  } catch (err) {
+    console.error('Erro ao buscar disciplinas do SQLite:', err);
+    return [];
+  }
 });
 
-ipcMain.handle('save-disciplines', (_event, data) => {
-  saveJSON(DATA_FILE, data);
-  // Notifica a outra janela para atualizar (se existir)
-  if (widgetWin && !widgetWin.isDestroyed()) {
-    widgetWin.webContents.send('data-changed');
+ipcMain.handle('save-disciplines', async (_event, data) => {
+  try {
+    await dbHelper.saveDisciplines(data);
+    // Notifica a outra janela para atualizar (se existir)
+    if (widgetWin && !widgetWin.isDestroyed()) {
+      widgetWin.webContents.send('data-changed');
+    }
+    if (appWin && !appWin.isDestroyed()) {
+      appWin.webContents.send('data-changed');
+    }
+    return true;
+  } catch (err) {
+    console.error('Erro ao salvar disciplinas no SQLite:', err);
+    return false;
   }
-  if (appWin && !appWin.isDestroyed()) {
-    appWin.webContents.send('data-changed');
-  }
-  return true;
 });
 
 // --- Data: Events (placeholder para Phase 2+) ---

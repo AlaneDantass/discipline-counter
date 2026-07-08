@@ -1,75 +1,7 @@
 // ============================================================
-//  CONFIGURAÇÃO PADRÃO (usada ao criar a primeira disciplina)
+//  widget/widget.js — Lógica do widget desktop
+//  Usa: shared/utils.js, shared/store.js (carregados via <script>)
 // ============================================================
-const DEFAULT_DISCIPLINE = {
-  name: 'Cálculo II',
-  semester: 'Semestre 2026.1',
-  startDate: '2026-03-02',
-  endDate: '2026-07-18',
-};
-// ============================================================
-
-const STORAGE_KEY_DISCIPLINES = 'discipline-counter-disciplines';
-const STORAGE_KEY_MANUAL      = 'discipline-counter-manual-days';
-
-// --- Helpers -------------------------------------------------
-
-function uid() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-}
-
-function daysBetween(a, b) {
-  const msPerDay = 86400000;
-  const utcA = Date.UTC(a.getFullYear(), a.getMonth(), a.getDate());
-  const utcB = Date.UTC(b.getFullYear(), b.getMonth(), b.getDate());
-  return Math.floor((utcB - utcA) / msPerDay);
-}
-
-function formatDateBR(date) {
-  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
-}
-
-function parseDate(str) {
-  const [y, m, d] = str.split('-').map(Number);
-  return new Date(y, m - 1, d);
-}
-
-// --- Data persistence ----------------------------------------
-
-function loadDisciplines() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY_DISCIPLINES);
-    if (raw) return JSON.parse(raw);
-  } catch { /* ignore */ }
-
-  // First run — create a default entry
-  const initial = [{ id: uid(), ...DEFAULT_DISCIPLINE, manualDays: [] }];
-  saveDisciplines(initial);
-  return initial;
-}
-
-function saveDisciplines(list) {
-  localStorage.setItem(STORAGE_KEY_DISCIPLINES, JSON.stringify(list));
-}
-
-// Migrate old manual-days from v1 (single discipline) into the first discipline
-function migrateOldData(disciplines) {
-  try {
-    const old = localStorage.getItem(STORAGE_KEY_MANUAL);
-    if (old && disciplines.length > 0) {
-      const parsed = JSON.parse(old);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        disciplines[0].manualDays = [
-          ...new Set([...(disciplines[0].manualDays || []), ...parsed]),
-        ];
-        saveDisciplines(disciplines);
-      }
-      localStorage.removeItem(STORAGE_KEY_MANUAL);
-    }
-  } catch { /* ignore */ }
-}
-
-// --- Rendering -----------------------------------------------
 
 const ICONS = ['📚', '📐', '🧪', '💻', '📝', '🎨', '🔬', '📊', '🧮', '🌍'];
 
@@ -77,9 +9,11 @@ function pickIcon(index) {
   return ICONS[index % ICONS.length];
 }
 
-function renderAll() {
+// --- Rendering -----------------------------------------------
+
+async function renderAll() {
   const app = document.getElementById('app');
-  const disciplines = loadDisciplines();
+  const disciplines = await Store.loadDisciplines();
   app.innerHTML = '';
 
   disciplines.forEach((disc, idx) => renderCard(app, disc, idx));
@@ -167,18 +101,15 @@ function renderCard(container, disc, idx) {
 
     if (isManual) el.classList.add('day--manual');
 
-    el.addEventListener('click', () => {
-      toggleManualDay(disc.id, dateStr);
-    });
-
+    el.addEventListener('click', () => toggleManualDay(disc.id, dateStr));
     grid.appendChild(el);
   }
 
   container.appendChild(card);
 }
 
-function toggleManualDay(discId, dateStr) {
-  const disciplines = loadDisciplines();
+async function toggleManualDay(discId, dateStr) {
+  const disciplines = await Store.loadDisciplines();
   const disc = disciplines.find((d) => d.id === discId);
   if (!disc) return;
 
@@ -191,14 +122,8 @@ function toggleManualDay(discId, dateStr) {
     disc.manualDays.splice(idx, 1);
   }
 
-  saveDisciplines(disciplines);
+  await Store.saveDisciplines(disciplines);
   renderAll();
-}
-
-function escHtml(str) {
-  const el = document.createElement('span');
-  el.textContent = str;
-  return el.innerHTML;
 }
 
 // --- Modal ---------------------------------------------------
@@ -213,12 +138,12 @@ const inputEnd   = () => document.getElementById('inputEnd');
 const btnDelete  = () => document.getElementById('btnDelete');
 const modalTitle = () => document.getElementById('modalTitle');
 
-function openModal(id) {
+async function openModal(id) {
   editingId = id;
 
   if (id) {
-    // Edit existing
-    const disc = loadDisciplines().find((d) => d.id === id);
+    const disciplines = await Store.loadDisciplines();
+    const disc = disciplines.find((d) => d.id === id);
     if (!disc) return;
     modalTitle().textContent = 'Editar Disciplina';
     inputName().value  = disc.name;
@@ -227,7 +152,6 @@ function openModal(id) {
     inputEnd().value   = disc.endDate;
     btnDelete().classList.remove('hidden');
   } else {
-    // New
     modalTitle().textContent = 'Nova Disciplina';
     inputName().value  = '';
     inputSem().value   = '';
@@ -237,22 +161,17 @@ function openModal(id) {
   }
 
   overlay().classList.add('active');
-
-  // Notifica o main process para habilitar foco na janela
-  if (window.widgetBridge) window.widgetBridge.modalOpened();
-
+  if (window.studyBridge) window.studyBridge.send('modal-opened');
   setTimeout(() => inputName().focus(), 200);
 }
 
 function closeModal() {
   overlay().classList.remove('active');
   editingId = null;
-
-  // Notifica o main process para desabilitar foco (volta a ficar atrás)
-  if (window.widgetBridge) window.widgetBridge.modalClosed();
+  if (window.studyBridge) window.studyBridge.send('modal-closed');
 }
 
-function saveModal() {
+async function saveModal() {
   const name  = inputName().value.trim();
   const sem   = inputSem().value.trim();
   const start = inputStart().value;
@@ -260,7 +179,7 @@ function saveModal() {
 
   if (!name || !start || !end) return;
 
-  const disciplines = loadDisciplines();
+  const disciplines = await Store.loadDisciplines();
 
   if (editingId) {
     const disc = disciplines.find((d) => d.id === editingId);
@@ -281,16 +200,16 @@ function saveModal() {
     });
   }
 
-  saveDisciplines(disciplines);
+  await Store.saveDisciplines(disciplines);
   closeModal();
   renderAll();
 }
 
-function deleteDisc() {
+async function deleteDisc() {
   if (!editingId) return;
-  let disciplines = loadDisciplines();
+  let disciplines = await Store.loadDisciplines();
   disciplines = disciplines.filter((d) => d.id !== editingId);
-  saveDisciplines(disciplines);
+  await Store.saveDisciplines(disciplines);
   closeModal();
   renderAll();
 }
@@ -298,21 +217,22 @@ function deleteDisc() {
 // --- Bootstrap -----------------------------------------------
 
 document.addEventListener('DOMContentLoaded', () => {
-  const disciplines = loadDisciplines();
-  migrateOldData(disciplines);
   renderAll();
+
+  // Expand button → open app
+  document.getElementById('expandBtn').addEventListener('click', () => {
+    if (window.studyBridge) window.studyBridge.send('open-app');
+  });
 
   // Modal buttons
   document.getElementById('btnSave').addEventListener('click', saveModal);
   document.getElementById('btnCancel').addEventListener('click', closeModal);
   document.getElementById('btnDelete').addEventListener('click', deleteDisc);
 
-  // Close modal on overlay click
   overlay().addEventListener('click', (e) => {
     if (e.target === overlay()) closeModal();
   });
 
-  // Keyboard: Escape to close, Enter to save
   document.addEventListener('keydown', (e) => {
     if (!overlay().classList.contains('active')) return;
     if (e.key === 'Escape') closeModal();
