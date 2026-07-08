@@ -2,6 +2,10 @@ const { app, BrowserWindow, screen, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
+// Set app name for WM_CLASS on Linux
+app.name = 'studyos';
+app.setName('studyos');
+
 // ============================================================
 //  CONFIGURAÇÃO
 // ============================================================
