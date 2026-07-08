@@ -6,17 +6,23 @@
 body {
   background-color: transparent;
   overflow: hidden;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  gap: 12px;
 }
 
 /* ---- Container ---- */
 .app {
   width: 100%;
-  height: calc(100vh - 52px); /* espaço para o botão expandir */
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 6px;
+  padding: 0 6px 6px;
   overflow-y: auto;
+  min-height: 0;
 }
 
 /* ---- Card ---- */
@@ -251,39 +257,40 @@ body {
   flex-shrink: 0;
   height: 42px;
   border-radius: var(--radius-md);
-  border: 2px dashed rgba(0, 220, 255, 0.2);
-  background: rgba(8, 8, 14, 0.5);
-  color: rgba(0, 220, 255, 0.4);
+  border: 2px dashed rgba(0, 240, 255, 0.5);
+  background: rgba(14, 14, 22, 0.92);
+  color: var(--color-accent);
   font-family: var(--font-family);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   transition: all 0.25s ease;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
 }
 .add-btn:hover {
-  border-color: rgba(0, 220, 255, 0.45);
-  background: rgba(0, 220, 255, 0.08);
-  color: var(--color-accent);
+  border-color: rgba(0, 240, 255, 0.8);
+  background: rgba(0, 240, 255, 0.15);
+  color: #ffffff;
+  box-shadow: 0 4px 20px rgba(0, 240, 255, 0.25);
+  transform: translateY(-1px);
 }
 .add-btn__icon { font-size: 18px; font-weight: 300; line-height: 1; }
 
 /* ---- Expand Button (Abrir StudyOS) ---- */
 .expand-btn {
-  position: fixed;
-  bottom: 6px;
-  left: 6px;
-  right: 6px;
+  flex-shrink: 0;
   height: 40px;
+  width: 100%;
   border-radius: var(--radius-md);
-  border: 1px solid rgba(0, 220, 255, 0.2);
-  background: linear-gradient(135deg, rgba(0, 200, 255, 0.12), rgba(123, 97, 255, 0.12));
-  color: var(--color-accent);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: linear-gradient(135deg, #00b0ff 0%, #7b61ff 100%);
+  color: #ffffff;
   font-family: var(--font-family);
   font-size: 12px;
   font-weight: 700;
@@ -294,15 +301,14 @@ body {
   justify-content: center;
   gap: 8px;
   transition: all 0.25s ease;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 15px rgba(0, 176, 255, 0.35);
   -webkit-app-region: no-drag;
 }
 .expand-btn:hover {
-  background: linear-gradient(135deg, rgba(0, 200, 255, 0.2), rgba(123, 97, 255, 0.2));
-  border-color: rgba(0, 220, 255, 0.4);
-  box-shadow: 0 0 20px rgba(0, 220, 255, 0.15);
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #00c3ff 0%, #8c73ff 100%);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(0, 176, 255, 0.5);
+  transform: translateY(-1.5px);
 }
 .expand-btn__icon { font-size: 16px; }
 

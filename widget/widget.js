@@ -16,6 +16,8 @@ async function renderAll() {
   const disciplines = await Store.loadDisciplines();
   app.innerHTML = '';
 
+  document.body.classList.toggle('is-empty', disciplines.length === 0);
+
   disciplines.forEach((disc, idx) => renderCard(app, disc, idx));
 
   // "+" add button

@@ -11,5 +11,9 @@
   },
   "dependencies": {
     "sqlite3": "^6.0.1"
+  },
+  "allowScripts": {
+    "electron@35.7.5": true,
+    "sqlite3@6.0.1": true
   }
 }
