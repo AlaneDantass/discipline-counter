@@ -15,18 +15,22 @@ body {
 
 /* ---- Container ---- */
 .app {
-  width: 100%;
+  height: 100%;
   flex: 1;
   display: flex;
   flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
   gap: 14px;
   padding: 0 6px 6px;
-  overflow-y: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
   min-height: 0;
 }
 
 /* ---- Card ---- */
 .card {
+  width: 390px;
   flex-shrink: 0;
   padding: 20px 18px 14px;
   display: flex;
@@ -254,6 +258,7 @@ body {
 
 /* ---- Add button ---- */
 .add-btn {
+  width: 390px;
   flex-shrink: 0;
   height: 42px;
   border-radius: var(--radius-md);
@@ -381,3 +386,72 @@ body {
 .modal__row .modal__label { flex: 1; }
 .modal__actions { display: flex; gap: 8px; margin-top: 6px; }
 .modal__actions .btn { flex: 1; }
+
+/* ---- Dense Card Styles (Phase 4 / Layout improvements) ---- */
+.app--dense .card {
+  padding: 12px 14px 10px;
+  gap: 8px;
+}
+
+.app--dense .card__icon {
+  font-size: 20px;
+}
+
+.app--dense .card__title {
+  font-size: 13px;
+}
+
+.app--dense .card__subtitle {
+  font-size: 9px;
+  margin-top: 0;
+}
+
+.app--dense .card__edit-btn {
+  width: 24px;
+  height: 24px;
+  font-size: 11px;
+}
+
+.app--dense .countdown {
+  padding: 0;
+}
+
+.app--dense .countdown__number {
+  font-size: 36px;
+  filter: drop-shadow(0 0 10px rgba(0, 220, 255, 0.25));
+}
+
+.app--dense .countdown__label {
+  font-size: 9px;
+  margin-top: 1px;
+}
+
+.app--dense .countdown__bar-track {
+  margin-top: 4px;
+}
+
+.app--dense .countdown__dates {
+  font-size: 8px;
+  margin-top: 2px;
+}
+
+.app--dense .grid-section__legend {
+  font-size: 7px;
+  margin-bottom: 4px;
+}
+
+.app--dense .grid {
+  grid-template-columns: repeat(auto-fill, 12px);
+  gap: 3px;
+  max-height: 80px;
+}
+
+.app--dense .day {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.app--dense .day--manual::after {
+  font-size: 7px;
+}

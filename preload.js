@@ -6,7 +6,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('studyBridge', {
   // Fire-and-forget messages
   send: (channel, ...args) => {
-    const validChannels = ['modal-opened', 'modal-closed', 'open-app', 'close-app'];
+    const validChannels = ['modal-opened', 'modal-closed', 'open-app', 'close-app', 'resize-widget'];
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, ...args);
     }

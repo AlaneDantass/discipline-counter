@@ -18,6 +18,33 @@ async function renderAll() {
 
   document.body.classList.toggle('is-empty', disciplines.length === 0);
 
+  // Calculate layout columns and dense style
+  let cols = 1;
+  let dense = false;
+  if (disciplines.length <= 2) {
+    cols = 1;
+    dense = false;
+  } else if (disciplines.length === 3) {
+    cols = 1;
+    dense = true;
+  } else {
+    cols = Math.ceil(disciplines.length / 3);
+    dense = true;
+  }
+
+  app.classList.toggle('app--dense', dense);
+
+  // Resize the Electron window dynamically
+  const colWidth = 410; // 390px card + 20px column spacing
+  let targetWidth = 420;
+  if (cols > 1) {
+    targetWidth = 420 + (cols - 1) * colWidth;
+  }
+
+  if (window.studyBridge) {
+    window.studyBridge.send('resize-widget', { width: targetWidth, height: 700 });
+  }
+
   disciplines.forEach((disc, idx) => renderCard(app, disc, idx));
 
   // "+" add button

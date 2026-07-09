@@ -160,6 +160,12 @@ ipcMain.on('modal-closed', () => {
   }
 });
 
+ipcMain.on('resize-widget', (event, { width, height }) => {
+  if (widgetWin && !widgetWin.isDestroyed()) {
+    widgetWin.setSize(width, height);
+  }
+});
+
 // --- Data: Disciplines ---
 ipcMain.handle('get-disciplines', async () => {
   try {
